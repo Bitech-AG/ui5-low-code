@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<library xmlns="http://www.sap.com/sap.ui.library.xsd">
+	<name>bitech.ui5.lc</name>
+	<vendor>Richard Martens</vendor>
+	<version>${version}</version>
+	<copyright>${copyright}</copyright>
+	<title>bitech.ui5.lc</title>
+	<documentation>Some description about bitech.ui5.lc</documentation>
+	<dependencies>
+		<dependency>
+			<libraryName>sap.ui.core</libraryName>
+		</dependency>
+	</dependencies>
+</library>
