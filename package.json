@@ -1,9 +1,9 @@
 {
-	"name": "bitech.ui5.lc",
-	"version": "1.0.0",
+	"name": "@bitech-ag/bitech.ui5.lc",
+	"version": "0.0.1",
 	"description": "UI5 Library: bitech.ui5.lc",
 	"author": "Richard Martens",
-	"license": "Apache-2.0",
+	"license": "MIT",
 	"scripts": {
 		"clean": "rimraf dist coverage",
 		"build": "ui5 build --clean-dest",

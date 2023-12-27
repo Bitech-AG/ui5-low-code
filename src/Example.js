@@ -4,7 +4,7 @@
 
 // Provides control bitech.ui5.lc.Example.
 sap.ui.define(["./library", "sap/ui/core/Control", "./ExampleRenderer"], function (library, Control, ExampleRenderer) {
-	"use strict";
+	
 
 	// refer to library types
 	var ExampleColor = library.ExampleColor;

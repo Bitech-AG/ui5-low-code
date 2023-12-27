@@ -3,7 +3,7 @@
  */
 
 sap.ui.define(["sap/ui/core/Core", "./library"], function (Core, library) {
-	"use strict";
+	
 
 	// refer to library types
 	var ExampleColor = library.ExampleColor;

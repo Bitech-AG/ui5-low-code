@@ -1,5 +1,5 @@
 sap.ui.define(function () {
-	"use strict";
+	
 
 	return {
 		name: "QUnit TestSuite for bitech.ui5.lc",

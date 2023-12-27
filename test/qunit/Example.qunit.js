@@ -1,6 +1,6 @@
 /*global QUnit */
 sap.ui.define(["bitech/ui5/lc/library", "bitech/ui5/lc/Example"], function (library, Example) {
-	"use strict";
+	
 
 	// refer to library types
 	var ExampleColor = library.ExampleColor;
