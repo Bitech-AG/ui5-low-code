@@ -1,7 +1,7 @@
 sap.ui.define([
   "sap/ui/core/Control",
   "bitech/ui5/lc/lowCode",
-  "bitech/ui5/lc",
+  "bitech/ui5/lc/library",
   "sap/m/DateTimePicker",
   "sap/m/Switch",
   "sap/m/Input",

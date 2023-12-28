@@ -4,12 +4,13 @@ sap.ui.define([
   "sap/m/Button",
   "sap/m/Toolbar",
   "sap/ui/core/library",
+  "sap/ui/core/Core",
   "bitech/ui5/lc/lowCode",
-  "bitech/ui5/lc",
+  "bitech/ui5/lc/library",
   "bitech/ui5/lc/Field",
   "sap/m/MessageBox"
 ],
-function (Control, SimpleForm, Button, Toolbar, core, lowCode, lc, Field, MessageBox) {
+function (Control, SimpleForm, Button, Toolbar, core, Core, lowCode, lc, Field, MessageBox) {
   
   const Form = Control.extend("bitech.ui5.lc.ActionForm", {
     metadata: {
@@ -52,7 +53,7 @@ function (Control, SimpleForm, Button, Toolbar, core, lowCode, lc, Field, Messag
 
       toolbar.addContent(new Button(
         `${toolbar.getId()}--send`, {
-          text: i18n.gettext("Send"),
+          text: i18n.getText("Send"),
           type: "Emphasized",
           press: this.submitForm.bind(this)
         }));

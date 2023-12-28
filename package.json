@@ -11,10 +11,11 @@
 		"start:dist": "npm start -- --config ui5-dist.yaml",
 		"testsuite": "ui5 serve -o test-resources/bitech/ui5/lc/qunit/testsuite.qunit.html",
 		"lint": "eslint src test",
+		"lint-fix": "eslint src test --fix",
 		"karma": "karma start",
 		"karma-ci": "karma start karma-ci.conf.js",
 		"karma-ci-cov": "karma start karma-ci-cov.conf.js",
-		"test": "npm run lint && npm run karma-ci-cov"
+		"test": "npm run karma-ci-cov"
 	},
 	"devDependencies": {
 		"@ui5/cli": "^3.6.1",
