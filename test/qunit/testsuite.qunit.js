@@ -27,10 +27,10 @@ sap.ui.define(function () {
 			}
 		},
 		tests: {
-			// test file for the Example control
-			Example: {
-				title: "QUnit Test for Example",
-				_alternativeTitle: "QUnit tests: bitech.ui5.lc.Example"
+			// test file for the ActionForm control
+			ActionForm: {
+				title: "QUnit Test for ActionForm",
+				_alternativeTitle: "QUnit tests: bitech.ui5.lc.ActionForm"
 			}
 		}
 	};

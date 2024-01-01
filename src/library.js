@@ -13,12 +13,10 @@ sap.ui.define([
 			"sap.m"
 		],
 		types: [
-			"bitech.ui5.lc.ExampleColor",
 			"bitech.ui5.lc.TargetType"
 		],
 		interfaces: [],
 		controls: [
-			"bitech.ui5.lc.Example",
 			"bitech.ui5.lc.Field",
 			"bitech.ui5.lc.ActionForm"
 		],
@@ -35,32 +33,10 @@ sap.ui.define([
 	 * @version ${version}
 	 * @public
 	 */
-	var thisLib = bitech.ui5.lc;
-
-	/**
-	 * Semantic Colors of the <code>bitech.ui5.lc.Example</code>.
-	 *
-	 * @enum {string}
-	 * @public
-	 */
-	thisLib.ExampleColor = {
+	const thisLib = bitech.ui5.lc;
 
 		/**
-		 * Default color (brand color)
-		 * @public
-		 */
-		Default : "Default",
-
-		/**
-		 * Highlight color
-		 * @public
-		 */
-		Highlight : "Highlight"
-
-	};
-
-		/**
-	 * Semantic Colors of the <code>bitech.ui5.lc.Example</code>.
+	 * Semantic Colors of the <code>bitech.ui5.lc.TargetType</code>.
 	 *
 	 * @enum {string}
 	 * @public

@@ -51,12 +51,13 @@ sap.ui.define([
           style: "Clear"
         });
 
-        toolbar.addContent(new Button(
+        this.sendButton = new Button(
           `${toolbar.getId()}--send`, {
           text: i18n.getText("Send"),
           type: "Emphasized",
           press: this.submitForm.bind(this)
-        }));
+        });
+        toolbar.addContent(this.sendButton);
         toolbar.addContent(toolbarInner);
 
         form.setToolbar(toolbar);
