@@ -21,7 +21,7 @@ function (Control, lowCode, lc, DateTimePicker, Switch, Input, Text) {
       },
       defaultAggregation: "content",
       aggregations: {
-        inner: { type: "sap.ui.core.Control", multiple: false, visibility: "hidden" }
+        inner: { type: "sap.ui.core.Control", multiple: false }
       },
       events: {
         change: {
@@ -48,7 +48,7 @@ function (Control, lowCode, lc, DateTimePicker, Switch, Input, Text) {
       case "tel": return "Tel";
       case "text": return "Text";
       case "url": return "Url";
-      default: throw new Error(`'${kindOfString}' isunknown kind of string`);
+      default: throw new Error(`'${kindOfString}' is unknown kind of string`);
       }
     },
     resolvePath: function (pathIn, parameter, metadata, actionName) {
@@ -134,32 +134,49 @@ function (Control, lowCode, lc, DateTimePicker, Switch, Input, Text) {
       this.setAggregation("inner", inner);
 
     },
+    isReady: async function() {
+      return await this.initContext();
+    },
+    initContext: async function() {
+      if (!this._isReady) {
+        this._isReady = new Promise(async function(resolve, reject) {
+          const metadata = await lowCode.modelContextChange(this);
+          const targetName = this.getTarget();
+          const targetType = this.getTargetType();
+          const notFoundTarget = targetType === lc.TargetType.Entity ? `Entity mit dem Namen '${targetName}' nicht definiert` : `Action mit dem Namen '${targetName}' ist nicht definiert`;
+          const inner = this.getAggregation("inner");
+    
+          if (!metadata[targetName]) {
+            reject(new Error(notFoundTarget));
+            return;
+          }
+    
+          const target = targetType === lc.TargetType.Entity ? metadata[targetName] : metadata[targetName].find(item => item.$kind === "Action");
+    
+          if (!target) {
+            reject(new Error(notFoundTarget));
+            return;
+          }
+    
+          if (inner) {
+            resolve();
+            return;
+          }
+    
+          const path = this.getPath();
+          const propMetadata = this.resolvePath(path, target.$Parameter, metadata, `${targetName}()`);
+    
+          this.addControl(propMetadata);
+
+          resolve();
+
+        }.bind(this));
+      }
+
+      return await this._isReady;
+    },
     onModelContextChange: async function () {
-      const metadata = await lowCode.modelContextChange(this);
-      const targetName = this.getTarget();
-      const targetType = this.getTargetType();
-      const notFoundTarget = targetType === lc.TargetType.Entity ? `Entity mit dem Namen '${targetName}' nicht definiert` : `Action mit dem Namen '${targetName}' ist nicht definiert`;
-      const inner = this.getAggregation("inner");
-
-      if (!metadata[targetName]) {
-        throw new Error(notFoundTarget);
-      }
-
-      const target = targetType === lc.TargetType.Entity ? metadata[targetName] : metadata[targetName].find(item => item.$kind === "Action");
-
-      if (!target) {
-        throw new Error(notFoundTarget);
-      }
-
-      if (inner) {
-        return;
-      }
-
-      const path = this.getPath();
-      const propMetadata = this.resolvePath(path, target.$Parameter, metadata, `${targetName}()`);
-
-      this.addControl(propMetadata);
-
+      return await this.initContext();
     }
   });
   return Form;

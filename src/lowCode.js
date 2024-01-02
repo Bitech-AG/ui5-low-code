@@ -6,20 +6,26 @@ function (Label) {
 
   return {
     modelContextChange: function (source) {
-      return new Promise((resolve) => {
+      return new Promise((resolve, reject) => {
         let id;
         let pastTime = 0;
 
         id = setInterval(() => {
-          const model = source.getModel();
-          const metaModel = model.getMetaModel();
-          const metadata = metaModel.getData();
-
-          pastTime += 100;
-
-          if (metadata || pastTime > 2000) {
+          try {
+            const model = source.getModel();
+            const metaModel = model.getMetaModel();
+            const metadata = metaModel.getData();
+  
+            pastTime += 100;
+  
+            if (metadata || pastTime > 2000) {
+              clearInterval(id);
+              resolve(metadata);
+            }
+            
+          } catch (error) {
             clearInterval(id);
-            resolve(metadata);
+            reject(error);
           }
         }, 100);
       });

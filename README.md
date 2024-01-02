@@ -80,3 +80,4 @@ Annotation   | Type     | Description
 -------------|----------|------------
 label        | string   | Label for input field
 kindOfString | string   | Type of string as described for property type of sap.m.input
+readonly     | boolean  | self-explanatory

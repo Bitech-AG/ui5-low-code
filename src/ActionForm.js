@@ -162,32 +162,48 @@ sap.ui.define([
           path
         }));
       },
+      isReady: async function() {
+        await this.initContext();
+      },
+      initContext: async function() {
+        if (!this._isReady) {
+          this._isReady = new Promise(async function (resolve, reject) {
+            const metadata = await lowCode.modelContextChange(this);
+            const actionName = this.getAction();
+            const notFound = `Action mit dem Namen '${actionName}' ist nicht definiert`;
+            const form = this.getAggregation("form");
+    
+            if (!metadata[actionName]) {
+              reject(new Error(notFound));
+              return;
+            }
+    
+            const action = metadata[actionName].find(item => item.$kind === "Action");
+    
+            if (!action) {
+              reject(new Error(notFound));
+              return;
+            }
+    
+            if (form.getContent().length) {
+              resolve();
+              return;
+            }
+    
+            const fields = this.getItems("", action.$Parameter, metadata, `${actionName}()`);
+    
+            fields.forEach(field => {
+              this.addControl(field, actionName, field.path);
+            });
+            resolve();
+          }.bind(this));
+        }
+
+        return await this._isReady;
+
+      },
       onModelContextChange: async function () {
-        const metadata = await lowCode.modelContextChange(this);
-        const actionName = this.getAction();
-        const notFound = `Action mit dem Namen '${actionName}' ist nicht definiert`;
-        const form = this.getAggregation("form");
-
-        if (!metadata[actionName]) {
-          throw new Error(notFound);
-        }
-
-        const action = metadata[actionName].find(item => item.$kind === "Action");
-
-        if (!action) {
-          throw new Error(notFound);
-        }
-
-        if (form.getContent().length) {
-          return;
-        }
-
-        const fields = this.getItems("", action.$Parameter, metadata, `${actionName}()`, "@fields");
-
-        fields.forEach(field => {
-          this.addControl(field, actionName, field.path);
-        });
-
+        await this.initContext();
       }
     });
     return Form;
