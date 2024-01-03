@@ -1,5 +1,6 @@
 /*global QUnit */
-sap.ui.define(["bitech/ui5/lc/ActionForm"], function (ActionForm) {
+sap.ui.define([
+	"bitech/ui5/lc/ActionForm"], function (ActionForm) {
 
 	// prepare DOM
 	const oDiv = document.createElement("div");
@@ -74,6 +75,13 @@ sap.ui.define(["bitech/ui5/lc/ActionForm"], function (ActionForm) {
 			sender.isReady().then(resolve).catch(reject);
 		}, 100);
 	});
+	const enterText = (input, text) => new Promise(resolve => {
+		setTimeout(() => {
+			input.setValue(text);
+			input.fireChange();
+			resolve();
+		}, 100);
+	});
 
 	// some basic eventing check
 	QUnit.test("Test sent event", async assert => {
@@ -118,7 +126,7 @@ sap.ui.define(["bitech/ui5/lc/ActionForm"], function (ActionForm) {
 		await fireModelContextChange(actionForm);
 
 		const form = actionForm.getAggregation("form");
-		const input = form.getContent().find(item => item.isReady);
+		const input = form.getContent().find(item => item.getInner);
 
 		assert.ok(input, "Input field found");
 
@@ -128,7 +136,49 @@ sap.ui.define(["bitech/ui5/lc/ActionForm"], function (ActionForm) {
 
 		await input.isReady();
 
-		assert.equal(input.getAggregation("inner").getType(), "Email", "Input field has wrong type");
+		assert.equal(input.getInner().getType(), "Email", "Input field has wrong type");
+
+	});
+
+
+	QUnit.test("Test auto submit if all fields are filled", async assert => {
+		const metadata = {
+			"node.odata.test": [{
+				$kind: "Action",
+				$Parameter: [{
+					$Name: "anything",
+					$Type: "Edm.String"
+				}]
+			}],
+			"$Annotations": {}
+		};
+
+		assert.expect(2);
+
+		createInstance(assert, {
+			action: "node.odata.test",
+			autoSubmit: true
+		});
+
+		mockMetadata(formMock, metadata);
+		mockSend(assert);//2. assert
+
+		await fireModelContextChange(actionForm);
+
+		const form = actionForm.getAggregation("form");
+		const field = form.getContent().find(item => item.getInner);
+
+		assert.ok(field, "Input field found"); // 1. assert
+
+		field1Mock = sinon.mock(field);
+		mockMetadata(field1Mock, metadata);
+		field.fireModelContextChange();
+
+		await field.isReady();
+
+		const inner = field.getInner();
+
+		await enterText(inner, `Shoot!`);
 
 	});
 });

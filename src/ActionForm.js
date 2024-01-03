@@ -159,43 +159,62 @@ sap.ui.define([
         form.addContent(new Field(id, {
           target: action,
           targetType: lc.TargetType.Action,
-          path
+          path,
+          change: this.onItemChanged.bind(this)
         }));
       },
-      isReady: async function() {
-        await this.initContext();
+      onItemChanged: function () {
+        if (this.getAutoSubmit() && this.checkLevel()) {
+          this.submitForm();
+        }
       },
-      initContext: async function() {
+      checkLevel: function () {
+        const form = this.getAggregation("form");
+        const initialValues = form.getAggregation("content")
+          .filter(item => item.isInitial && item.isInitial());
+
+        return initialValues?.length ? false : true;
+
+      },
+      isReady: async function () {
+        return await this.initContext();
+      },
+      initContext: async function () {
         if (!this._isReady) {
           this._isReady = new Promise(async function (resolve, reject) {
-            const metadata = await lowCode.modelContextChange(this);
-            const actionName = this.getAction();
-            const notFound = `Action mit dem Namen '${actionName}' ist nicht definiert`;
-            const form = this.getAggregation("form");
-    
-            if (!metadata[actionName]) {
-              reject(new Error(notFound));
-              return;
-            }
-    
-            const action = metadata[actionName].find(item => item.$kind === "Action");
-    
-            if (!action) {
-              reject(new Error(notFound));
-              return;
-            }
-    
-            if (form.getContent().length) {
+            try {
+              const metadata = await lowCode.modelContextChange(this);
+              const actionName = this.getAction();
+              const notFound = `Action mit dem Namen '${actionName}' ist nicht definiert`;
+              const form = this.getAggregation("form");
+
+              if (!metadata[actionName]) {
+                throw new Error(notFound);
+              }
+
+              const action = metadata[actionName].find(item => item.$kind === "Action");
+
+              if (!action) {
+                throw new Error(notFound);
+              }
+
+              if (form.getContent().length) {
+                resolve();
+                return;
+              }
+
+              const fields = this.getItems("", action.$Parameter, metadata, `${actionName}()`);
+
+              fields.forEach(field => {
+                this.addControl(field, actionName, field.path);
+              });
+
               resolve();
-              return;
+
+            } catch (error) {
+              reject(error);
             }
-    
-            const fields = this.getItems("", action.$Parameter, metadata, `${actionName}()`);
-    
-            fields.forEach(field => {
-              this.addControl(field, actionName, field.path);
-            });
-            resolve();
+
           }.bind(this));
         }
 
