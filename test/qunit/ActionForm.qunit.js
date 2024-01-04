@@ -25,11 +25,13 @@ sap.ui.define([
 		});
 	});
 
-	let actionForm, formMock, field1Mock;
+	let actionForm, formMock;
+	let fieldMocks = [];
 	// module for basic checks
 	QUnit.module("Basic Control Checks", {
 		afterEach: () => {
-			field1Mock?.restore();
+			fieldMocks.forEach(item => item.restore());
+			fieldMocks = [];
 			formMock?.restore();
 			actionForm?.destroy();
 		}
@@ -82,6 +84,12 @@ sap.ui.define([
 			resolve();
 		}, 100);
 	});
+	const mockField = (input, metadata) => {
+		const mock = sinon.mock(input);
+
+		fieldMocks.push(mock);
+		mockMetadata(mock, metadata);
+	};
 
 	// some basic eventing check
 	QUnit.test("Test sent event", async assert => {
@@ -130,8 +138,7 @@ sap.ui.define([
 
 		assert.ok(input, "Input field found");
 
-		field1Mock = sinon.mock(input);
-		mockMetadata(field1Mock, metadata);
+		mockField(input, metadata);
 		input.fireModelContextChange();
 
 		await input.isReady();
@@ -139,7 +146,6 @@ sap.ui.define([
 		assert.equal(input.getInner().getType(), "Email", "Input field has wrong type");
 
 	});
-
 
 	QUnit.test("Test auto submit if all fields are filled", async assert => {
 		const metadata = {
@@ -170,13 +176,57 @@ sap.ui.define([
 
 		assert.ok(field, "Input field found"); // 1. assert
 
-		field1Mock = sinon.mock(field);
-		mockMetadata(field1Mock, metadata);
+		mockField(field, metadata);
 		field.fireModelContextChange();
 
 		await field.isReady();
 
 		const inner = field.getInner();
+
+		await enterText(inner, `Shoot!`);
+
+	});
+
+	QUnit.test("Test auto submit should not work if all fields are not filled", async assert => {
+		const metadata = {
+			"node.odata.test": [{
+				$kind: "Action",
+				$Parameter: [{
+					$Name: "anything",
+					$Type: "Edm.String"
+				}, {
+					$Name: "anyotherthing",
+					$Type: "Edm.String"
+				}]
+			}],
+			"$Annotations": {}
+		};
+
+		assert.expect(1);
+
+		createInstance(assert, {
+			action: "node.odata.test",
+			autoSubmit: true
+		});
+
+		mockMetadata(formMock, metadata);
+		mockSend(assert);//2. assert should not reach
+
+		await fireModelContextChange(actionForm);
+
+		const form = actionForm.getAggregation("form");
+		const fields = form.getContent().filter(item => item.getInner);
+
+		assert.equal(fields.length, 2,  "Input fields found"); // 1. assert
+
+		fields.forEach(item => {
+			mockField(item, metadata);
+			item.fireModelContextChange();
+		});
+
+		await Promise.all(fields.map(item => item.isReady()));
+
+		const inner = fields[0].getInner();
 
 		await enterText(inner, `Shoot!`);
 

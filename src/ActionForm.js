@@ -170,7 +170,7 @@ sap.ui.define([
       },
       checkLevel: function () {
         const form = this.getAggregation("form");
-        const initialValues = form.getAggregation("content")
+        const initialValues = form.getContent()
           .filter(item => item.isInitial && item.isInitial());
 
         return initialValues?.length ? false : true;
