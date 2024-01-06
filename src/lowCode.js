@@ -94,7 +94,7 @@ function (Label) {
       properties.forEach(name => {
         // entity or deep parameter
         const item = this.getProperty(name, entity, metadata);
-        let subResult;
+        let subResult = [];
 
         if (item.$isCollection) {
           return;
@@ -107,10 +107,10 @@ function (Label) {
 
         } else if (name.indexOf("/") >= 0) {
           const [current, next, rest] = name.split("/");
-          subResult = this.resolveProperty(pathIn ? `${pathIn}/${current}/${next}` : `${current}/${next}`, `${next}${rest || ""}`, metadata[entity[current].$Type], metadata, entity[current].$Type);
+          subResult.push(this.resolveProperty(pathIn ? `${pathIn}/${current}/${next}` : `${current}/${next}`, `${next}${rest || ""}`, metadata[entity[current].$Type], metadata, entity[current].$Type));
 
         } else {
-          subResult = this.resolveProperty(pathIn ? `${pathIn}/${name}` : name, name, entity, metadata, entityType);
+          subResult.push(this.resolveProperty(pathIn ? `${pathIn}/${name}` : name, name, entity, metadata, entityType));
 
         }
         subResult.forEach(item => result.push(item));

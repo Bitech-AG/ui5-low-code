@@ -54,27 +54,75 @@ sap.ui.define([
           default: throw new Error(`'${kindOfString}' is unknown kind of string`);
         }
       },
-      resolvePath: function (pathIn, parameter, metadata, actionName) {
-        const param = parameter.find(item => `$Parameter/${item.$Name}` === pathIn);
-
-        if (param.$Type.indexOf("node.odata") >= 0) {
-          const path = pathIn ? `${pathIn}/${param.$Name}` : param.$Name;
-          return this.resolvePath(path, metadata[param.$Type], metadata, param.$Type);
-
-        } else {
-          const result = lowCode.resolveProperty(
-            pathIn,
-            param.$Name,
-            { [param.$Name]: param },
-            metadata,
-            actionName);
-
-          return {
-            ...result,
-            ...param
-          };
+      compareParameter: function (path, param, entity, metadata) {
+        // path = 'name/first
+        // param = { $Name: 'name', $Type: 'node.odata.fullName' }
+        /* entity = {
+        $kind: "ComplexType",
+        first: {
+          $kind: "property",
+          $Type: "Edm.String"
+        },
+        last: {
+          $kind: "property",
+          $Type: "Edm.String"
+        }
+      } */
+        if (`$Parameter/${param.$Name}` === path) {
+          return true;
 
         }
+
+        if (!entity) {
+          return false;
+        }
+
+        const [,, next, rest] = path.split("/");
+
+        if (entity[next]) {
+          const complex = metadata[entity[next].$Type];
+
+          return !complex ? true : this.compareParameter(
+            rest ? `${next}/${rest}` : next,
+            entity[next],
+            complex,
+            metadata);
+        }
+
+        return false;
+
+      },
+      getEntityProperty: function (pathIn, param, metadata) {
+        if (param.$Type.indexOf("node.odata") === -1) {
+          return param;
+        }
+
+        const [, next, rest] = pathIn.split("/");
+        const complex = metadata[param.$Type];
+
+        return this.getEntityProperty(rest, complex[next], metadata);
+      },
+      resolvePath: function (pathIn, parameter, metadata, actionName) {
+        let param = parameter.find(item => this.compareParameter(pathIn, item, metadata[item.$Type], metadata));
+        let name = param.$Name;
+
+        if (param.$Type.indexOf("node.odata") >= 0) {
+          name = pathIn.replace("$Parameter/", "");
+          param = this.getEntityProperty(name, param, metadata);
+
+        }
+
+        const result = lowCode.resolveProperty(
+          pathIn,
+          name,
+          { [name]: param },
+          metadata,
+          actionName);
+
+        return {
+          ...result,
+          ...param
+        };
 
       },
 
@@ -146,9 +194,9 @@ sap.ui.define([
         if (inner.getMetadata().getName() === "sap.m.Switch") {
           return false;
         }
-        
+
         return inner.getValue() ? false : true;
-        
+
       },
       onChange: function (event) {
         this.fireChange(event);

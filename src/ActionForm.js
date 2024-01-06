@@ -129,7 +129,7 @@ sap.ui.define([
 
           let subResult;
           if (param.$Type.indexOf("node.odata") >= 0) {
-            const path = pathIn ? `${pathIn}/${param.$Name}` : param.$Name;
+            const path = pathIn ? `${pathIn}/${param.$Name}` : `$Parameter/${param.$Name}`;
             subResult = lowCode.getItems(path, metadata[param.$Type], metadata, param.$Type, "@fields");
 
             subResult.forEach(item => result.push(item));

@@ -3,3 +3,5 @@ karma*
 test
 .editor*
 .eslint*
+coverage
+dist

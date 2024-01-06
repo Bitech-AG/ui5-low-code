@@ -1,0 +1,40 @@
+{
+  "_version": "1.28.0",
+  "sap.app": {
+    "id": "bitech.ui5.lc",
+    "type": "library",
+    "applicationVersion": {
+      "version": "${version}"
+    },
+    "title": "bitech.ui5.lc",
+    "description": "OpenUI5 low code ui library"
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "dependencies": {
+      "minUI5Version": "latest",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "library": {
+      "i18n": {
+        "bundleUrl": "messagebundle.properties",
+        "supportedLocales": ["en", "de"],
+        "fallbackLocale": "de"
+      }
+    }
+  }
+}

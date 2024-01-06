@@ -147,6 +147,57 @@ sap.ui.define([
 
 	});
 
+	QUnit.test("Test complex parameter", async assert => {
+		const metadata = {
+			"node.odata.fullName": {
+				$kind: "ComplexType",
+				first: {
+					$kind: "property",
+					$Type: "Edm.String"
+				},
+				last: {
+					$kind: "property",
+					$Type: "Edm.String"
+				}
+			},
+			"node.odata.test": [{
+				$kind: "Action",
+				$Parameter: [{
+					$Name: "name",
+					$Type: "node.odata.fullName"
+				}]
+			}],
+			$Annotations: {
+			}
+		};
+
+		assert.expect(3);
+
+		createInstance(assert, {
+			action: "node.odata.test"
+		});
+
+		mockMetadata(formMock, metadata);
+
+		await fireModelContextChange(actionForm);
+
+		const form = actionForm.getAggregation("form");
+		const fields = form.getContent().filter(item => item.getInner);
+
+		assert.equal(fields?.length, 2, "Input fields found"); // 1. assert
+
+		fields.forEach( field => {
+			mockField(field, metadata);
+			field.fireModelContextChange();
+		});
+
+		await Promise.all(fields.map(field => field.isReady()));
+
+		assert.equal(fields[0].getInner().getName(), "name/first", "Input field has name"); // 2. assert
+		assert.equal(fields[1].getInner().getName(), "name/last", "Input field has name"); // 3. assert
+
+	});
+
 	QUnit.test("Test auto submit if all fields are filled", async assert => {
 		const metadata = {
 			"node.odata.test": [{
