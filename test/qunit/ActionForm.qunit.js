@@ -51,9 +51,21 @@ sap.ui.define([
 		actionForm = new ActionForm(properties).placeAt("uiArea1");
 		formMock = sinon.mock(actionForm);
 	};
-	const mockSend = assert => {
+	const mockSend = (assert, message) => {
 		formMock.expects("getObjectBinding").once().returns({
-			execute: () => assert.ok(true, "Operations is executed")
+			execute: () => {
+				assert.ok(true, "Operations is executed");
+				
+				if (message) {
+					const error = new Error(message);
+
+					error.error = {
+						message,
+						target: "any"
+					}
+					throw error;
+				}
+			}
 		});
 	};
 	const firePress = () => new Promise(resolve => {
@@ -92,16 +104,35 @@ sap.ui.define([
 	};
 
 	// some basic eventing check
-	QUnit.test("Test sent event", async assert => {
+	QUnit.test("Test success event", async assert => {
 		assert.expect(2);
 
 		createInstance(assert, {
 			action: "node.odata.test",
-			sent: function () {
+			success: function () {
 				assert.ok(true, "Event has been fired!");
 			}
 		});
 		mockSend(assert);
+
+		await firePress();
+
+	});
+
+	QUnit.test("Test error event", async assert => {
+		assert.expect(3);
+
+		createInstance(assert, {
+			action: "node.odata.test",
+			error: function (event) {
+				assert.ok(true, "Event has been fired!");
+
+				const error = event.getParameter("error");
+
+				assert.ok(error, "Error object exists");
+			}
+		});
+		mockSend(assert, "Shit happens");
 
 		await firePress();
 
@@ -193,8 +224,8 @@ sap.ui.define([
 
 		await Promise.all(fields.map(field => field.isReady()));
 
-		assert.equal(fields[0].getInner().getName(), "name/first", "Input field has name"); // 2. assert
-		assert.equal(fields[1].getInner().getName(), "name/last", "Input field has name"); // 3. assert
+		assert.equal(fields[0].getInner().getName(), "name.first", "Input field has name"); // 2. assert
+		assert.equal(fields[1].getInner().getName(), "name.last", "Input field has name"); // 3. assert
 
 	});
 

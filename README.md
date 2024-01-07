@@ -31,9 +31,10 @@ content     | sap.ui.core.Control | true     | Not intended for use
 
 Default aggregation: content
 
-Event | Description
-------|------------
-sent  | Informs about successful submission of the form
+Event    | Description
+---------|------------
+success  | Informs about successful submission of the form
+error    | Fired when the form has not been submitted due to an error. The error object is passed to the event. Your own error handling is only necessary for complex properties and parameters.
 
 ### Annotations
 
@@ -55,7 +56,7 @@ The form generates the Field elements for each input field. These evaluate furth
       <lc:ActionForm id="loginForm" 
           binding="{/node.odata.login(...)}"
           action="node.odata.login"
-          sent="handleLoginPress">
+          success="handleLoginPress">
         <lc:toolbar>
           <ToolbarSpacer id="toolbarSpacer" />
           <Link id="register" href="#/register" text="{i18n>register}" class="register" />

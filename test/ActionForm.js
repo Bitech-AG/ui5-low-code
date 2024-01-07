@@ -4,7 +4,7 @@ sap.ui.define(["bitech/ui5/lc/ActionForm"], function (ActionForm) {
 	new ActionForm({
 		action: "node.odata.test",
 		autoSubmit: true,
-		sent: function (event) {
+		success: function (event) {
 			alert("Action test submitted");
 		}
 	}).placeAt("content");

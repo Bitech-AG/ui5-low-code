@@ -30,10 +30,15 @@ sap.ui.define([
           }
         },
         events: {
-          sent: {
+          error: {
             parameters: {
+              error : {
+                allowPreventDefault : true,
+                type: "object"
+              }
             }
-          }
+          },
+          success: {}
         }
       },
       init: function () {
@@ -80,11 +85,14 @@ sap.ui.define([
 
           form.setBusy(false);
           this.resetForm();
-          this.fireSent();
+          this.fireSuccess();
 
         } catch (error) {
           form.setBusy(false);
-          if (!error.error?.target) {
+
+          const executeDefault = this.fireError({error});
+
+          if (executeDefault && !error.error?.target) {
             MessageBox.error(error.message);
           }
         }
