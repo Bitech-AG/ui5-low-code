@@ -114,7 +114,7 @@ sap.ui.define([
 
         const result = lowCode.resolveProperty(
           pathIn,
-          name.replace("/", "."),
+          name,
           { [name]: param },
           metadata,
           actionName);

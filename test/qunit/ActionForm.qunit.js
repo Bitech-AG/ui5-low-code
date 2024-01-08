@@ -224,8 +224,8 @@ sap.ui.define([
 
 		await Promise.all(fields.map(field => field.isReady()));
 
-		assert.equal(fields[0].getInner().getName(), "name.first", "Input field has name"); // 2. assert
-		assert.equal(fields[1].getInner().getName(), "name.last", "Input field has name"); // 3. assert
+		assert.equal(fields[0].getInner().getName(), "name/first", "Input field has name"); // 2. assert
+		assert.equal(fields[1].getInner().getName(), "name/last", "Input field has name"); // 3. assert
 
 	});
 
