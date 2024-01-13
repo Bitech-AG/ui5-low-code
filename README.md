@@ -2,6 +2,32 @@
 
 The library contains a number of the elements that are used to automatically generate user interfaces based on the OData annotations. The library supports OData version 4 only.
 
+## Setup
+
+Extend your ui5.yaml file with
+
+```
+---
+specVersion: "3.2"
+kind: extension
+type: project-shim
+metadata:
+  name: bitech-ui5-lc
+shims:
+  configurations:
+    "@bitech-ag/bitech.ui5.lc":
+      specVersion: "3.2"
+      type: library
+      metadata:
+        name: bitech.ui5.lc
+```
+
+Install the library as a dependency.
+
+```
+npm install @bitech-ag/bitech.ui5.lc --save
+```
+
 ## ActionForm
 
 extends: sap.ui.core.Control
@@ -23,6 +49,7 @@ Property   | Type    | DefaultValue | Description
 -----------|---------|--------------|------------
 action     | string  |              | Full qualified name of OData action
 autoSubmit | boolean | false        | Submits the form as soon as all mandatory fields have been filled and the Enter key has been pressed.
+submitText | string  | "Send"       | Label for the submit button
 
 Aggregation | Type                | Multiple | Description
 ------------|---------------------|----------|------------

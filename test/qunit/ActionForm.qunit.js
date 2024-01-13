@@ -1,6 +1,8 @@
 /*global QUnit */
 sap.ui.define([
-	"bitech/ui5/lc/ActionForm"], function (ActionForm) {
+  "sap/ui/core/Lib",
+	"bitech/ui5/lc/ActionForm"
+], function (Lib, ActionForm) {
 
 	// prepare DOM
 	const oDiv = document.createElement("div");
@@ -39,12 +41,16 @@ sap.ui.define([
 
 	// some basic control checks
 	QUnit.test("Test get properties", function (assert) {
-		assert.expect(2);
+
+		const i18n = Lib.getResourceBundleFor("bitech.ui5.lc");
+
+		assert.expect(3);
 		actionForm = new ActionForm({
 			action: "node.odata.test"
 		});
 		assert.equal(actionForm.getAction(), "node.odata.test", "Check action equals 'node.odata.test'");
 		assert.equal(actionForm.getAutoSubmit(), false, "Check autoSubmit equals 'false'");
+		assert.equal(actionForm.getSubmitText(), i18n.getText("Send"), "Check submitText defaultValue without i18n");
 	});
 
 	const createInstance = (assert, properties) => {
