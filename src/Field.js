@@ -55,20 +55,9 @@ sap.ui.define([
         }
       },
       compareParameter: function (path, param, entity, metadata) {
-        // path = 'name/first
-        // param = { $Name: 'name', $Type: 'node.odata.fullName' }
-        /* entity = {
-        $kind: "ComplexType",
-        first: {
-          $kind: "property",
-          $Type: "Edm.String"
-        },
-        last: {
-          $kind: "property",
-          $Type: "Edm.String"
-        }
-      } */
-        if (`$Parameter/${param.$Name}` === path) {
+        const pathLocal = path.replace("$Parameter/", "");
+        
+        if (param.$Name === pathLocal) {
           return true;
 
         }
@@ -77,7 +66,7 @@ sap.ui.define([
           return false;
         }
 
-        const [,, next, rest] = path.split("/");
+        const [, next, rest] = pathLocal.split("/");
 
         if (entity[next]) {
           const complex = metadata[entity[next].$Type];
@@ -102,7 +91,7 @@ sap.ui.define([
 
         return this.getEntityProperty(rest, complex[next], metadata);
       },
-      resolvePath: function (pathIn, parameter, metadata, actionName) {
+      resolvePath: function (pathIn, parameter, metadata, target) {
         let param = parameter.find(item => this.compareParameter(pathIn, item, metadata[item.$Type], metadata));
         let name = param.$Name;
 
@@ -117,7 +106,7 @@ sap.ui.define([
           name,
           { [name]: param },
           metadata,
-          actionName);
+          target);
 
         return {
           ...result,
@@ -230,7 +219,22 @@ sap.ui.define([
               }
 
               const path = this.getPath();
-              const propMetadata = this.resolvePath(path, target.$Parameter, metadata, `${targetName}()`);
+              let fields, annoPath;
+              
+              if (targetType === lc.TargetType.Action) {
+                fields = target.$Parameter;
+                annoPath = `${targetName}()`;
+                
+              } else {
+                fields = Object.keys(target).map(item => ({
+                  $Name: item,
+                  ...target[item]
+                }));
+                annoPath = targetName;
+
+              }
+
+              const propMetadata = this.resolvePath(path, fields, metadata, annoPath);
 
               this.addControl(propMetadata);
 

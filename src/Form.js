@@ -30,8 +30,8 @@ sap.ui.define([
         events: {
           error: {
             parameters: {
-              error : {
-                allowPreventDefault : true,
+              error: {
+                allowPreventDefault: true,
                 type: "object"
               }
             }
@@ -128,19 +128,22 @@ sap.ui.define([
       },
       addControl: function (field, target, targetType, path) {
         const form = this.getAggregation("form");
-
         const id = `${form.getId()}--${field.path.replace("$Parameter/", "").replace("/", "-")}`;
-
-        form.addContent(lowCode.getFieldLabel(id, false, field));
-        form.addContent(new Field(id, {
+        const properties = {
           target: target,
           targetType: targetType,
-          path,
-          change: this.onItemChanged?.bind(this)
-        }));
+          path
+        };
+
+        if (this.onItemChanged) {
+          properties.change = this.onItemChanged?.bind(this);
+        }
+
+        form.addContent(lowCode.getFieldLabel(id, false, field));
+        form.addContent(new Field(id, properties));
       },
-      onError: function(error) {
-        const executeDefault = this.fireError({error});
+      onError: function (error) {
+        const executeDefault = this.fireError({ error });
 
         if (executeDefault && !error.error?.target) {
           MessageBox.error(error.message);
